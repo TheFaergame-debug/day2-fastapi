@@ -1,34 +1,37 @@
-# Отчёт по Дню 2
+# Отчёт по Дню 3
 
 ## Теория
-Разобрал клиент-серверную архитектуру, HTTP-методы и коды ответов,
-REST API, JSON, FastAPI, OpenAPI/Swagger.
+Разобрал слоистую архитектуру (API / Service / Repository / Schemas / Models),
+принципы Clean Code, SRP, DRY, DI через Depends.
 
 ## Практика
-- Установил Python, создал виртуальное окружение (venv)
-- Установил FastAPI и uvicorn
-- Реализовал CRUD для задач в памяти:
-  - GET /tasks — список всех задач
-  - GET /tasks/{id} — одна задача
-  - POST /tasks — создание (201)
-  - PUT /tasks/{id} — частичное обновление
-  - DELETE /tasks/{id} — удаление (204)
-- Обработал 404 для несуществующих задач
-- Протестировал все эндпоинты через Swagger UI
+- Создал ветку refactor/layered-architecture
+- Разбил монолитный main.py на слои:
+  - app/main.py — точка входа
+  - app/api/tasks.py — HTTP-роутеры
+  - app/services/task_service.py — бизнес-логика
+  - app/repositories/task_repository.py — хранилище
+  - app/schemas/task.py — Pydantic DTO
+  - app/models/task.py — доменная модель
+  - app/dependencies.py — DI
+- Добавил бизнес-правило: нельзя создать задачу с done=True
+- Проверил все эндпоинты через Swagger (включая 400 на бизнес-правило)
+- Создал PR, провёл Code Review, смержил в main
 
 ## Результат
-- Приложение работает на http://127.0.0.1:8000
-- Swagger UI: http://127.0.0.1:8000/docs
+- Приложение работает так же, как в Дне 2
+- Структура проекта профессиональная
+- PR: https://github.com/TheFaergame-debug/day2-fastapi/pull/2
 - Репозиторий: https://github.com/TheFaergame-debug/day2-fastapi
 
 ## Проблемы и решения
-- PowerShell блокировал активацию venv → 
-  Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
-- В .gitignore не хватало __pycache__/ → дополнил
+- Имена файлов не совпадали с импортами
+  (tasks.py вместо task.py, tasks.py вместо task_service.py) →
+  переименовал через Rename-Item в PowerShell
+- Локальная ветка была удалена до merge PR → восстановил через
+  merge PR на GitHub и git pull
 
 ## Вывод
-Освоил базовый REST API на FastAPI. Понял, как HTTP-методы
-мапятся на CRUD-операции. Swagger UI — удобный инструмент
-для тестирования API без Postman. Pydantic автоматически
-валидирует входящие данные.
-
+Понял, зачем нужны слои: замена БД, тестирование, работа в команде.
+API-слой не знает про SQL, Service — про HTTP, Repository — про бизнес-правила.
+Это позволяет менять любую часть независимо.
